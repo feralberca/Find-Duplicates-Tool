@@ -1,0 +1,39 @@
+apply plugin: 'java'
+apply plugin: 'maven'
+apply plugin: 'eclipse'
+
+version=1.0
+
+sourceCompatibility=1.8
+targetCompatibility=1.8
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile 'ch.qos.logback:logback-classic:1.2.3'
+    compile 'commons-cli:commons-cli:1.4'
+    testCompile "junit:junit:4.12"
+    testCompile "org.easymock:easymock:3.4"
+    testCompile "org.powermock:powermock-core:1.7.0"
+    testCompile "org.powermock:powermock-module-junit4:1.7.0"
+    testCompile "org.powermock:powermock-api-easymock:1.7.0"
+}
+
+jar {
+    manifest {
+        attributes 'Implementation-Title': 'Duplicate Finder',
+                'Implementation-Version': version,
+                'Main-Class': 'ar.com.falberca.duplicate.finder.app.FinderApp'
+    }
+    doFirst {
+        from {
+            configurations.compile.collect {
+                it.isDirectory() ? it : zipTree(it).matching {
+                    exclude 'maven', '**/pom.xml', 'META-INF/*.SF', 'META-INF/*.DSA', 'META-INF/*.RSA'
+                }
+            }
+        }
+    }
+}
